@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"image"
 	"image/color"
@@ -145,10 +146,8 @@ func openSocket(w *sync.WaitGroup) {
 		m := aList[i]
 
 		if _, err := c.WriteTo(iCMPPacket, m); err != nil {
-			if neterr, ok := err.(*net.OpError); ok {
-				if neterr.Err == syscall.ENOBUFS {
-					continue
-				}
+			if errors.Is(err, syscall.ENOBUFS) {
+				continue
 			}
 			if err != nil {
 				fmt.Println(err)
